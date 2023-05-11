@@ -6,24 +6,24 @@ namespace Buzzr.AppLogic
 {
     public class Service : IService
     {
-        private IPlayerRepository _playerRepo;
-        private ITeamRepository _teamRepo;
+        private IPlayerRepository _playerRepository;
+        private ITeamRepository _teamRepository;
         private IList<Player> _buzzedPlayers;
 
-        public Service(IPlayerRepository playerRepo, ITeamRepository teamRepo)
+        public Service(IPlayerRepository playerRepository, ITeamRepository teamRepository)
         {
-            _playerRepo = playerRepo;
-            _teamRepo = teamRepo;
+            _playerRepository = playerRepository;
+            _teamRepository = teamRepository;
             _buzzedPlayers = new List<Player>();
         }
         public void AddPoints(Guid teamId, int points)
         {
-            _teamRepo.GetById(teamId).AddPoints(points);
+            _teamRepository.GetById(teamId).AddPoints(points);
         }
 
         public void Buzz(Guid playerId, TimeOnly buzzTime)
         {
-            var player = _playerRepo.GetById(playerId);
+            var player = _playerRepository.GetById(playerId);
             player.Buzzed(buzzTime.Hour, buzzTime.Minute, buzzTime.Second, buzzTime.Millisecond);
 
             _buzzedPlayers.Add(player);
@@ -32,13 +32,13 @@ namespace Buzzr.AppLogic
 
         public void BuzzBan(Guid playerId)
         {
-            _playerRepo.GetById(playerId).BuzzBan(false);
+            _playerRepository.GetById(playerId).BuzzBan(false);
         }
 
         public Player CreatePlayer(string name, Guid teamId)
         {
             Player newPlayer = new Player(name, teamId);
-            _teamRepo.GetById(teamId).AddPlayer(newPlayer);
+            _teamRepository.GetById(teamId).AddPlayer(newPlayer);
             return newPlayer;
 
         }
@@ -46,7 +46,7 @@ namespace Buzzr.AppLogic
         public Team CreateTeam(string name)
         {
             Team newTeam = new Team(name);
-            _teamRepo.Add(newTeam); 
+            _teamRepository.Add(newTeam); 
             return newTeam;
         }
 
@@ -57,12 +57,12 @@ namespace Buzzr.AppLogic
 
         public Player GetPlayer(Guid playerId)
         {
-            return _playerRepo.GetById(playerId);
+            return _playerRepository.GetById(playerId);
         }
 
         public IList<Player> GetPlayers()
         {
-            return _playerRepo.GetAll();
+            return _playerRepository.GetAll();
         }
 
         public Player GetRandomPlayer()
@@ -74,39 +74,39 @@ namespace Buzzr.AppLogic
 
         public Team GetTeam(Guid Id)
         {
-            return _teamRepo.GetById(Id);
+            return _teamRepository.GetById(Id);
         }
 
         public IList<Team> GetTeams()
         {
-            return _teamRepo.GetAll();
+            return _teamRepository.GetAll();
         }
 
         public void RemovePlayer(Guid playerId)
         {
-            var player = _playerRepo.GetById(playerId);
+            var player = _playerRepository.GetById(playerId);
 
-            var team = _teamRepo.GetById(player.TeamId);
+            var team = _teamRepository.GetById(player.TeamId);
 
             team.RemovePlayer(player);
-            _playerRepo.Delete(playerId);
+            _playerRepository.Delete(playerId);
 
             
         }
 
         public void RemovePoints(Guid teamId, int points)
         {
-            _teamRepo.GetById(teamId).RemovePoints(points);
+            _teamRepository.GetById(teamId).RemovePoints(points);
         }
 
         public void RemoveTeam(Guid teamId)
         {
-            _teamRepo.Delete(teamId);
+            _teamRepository.Delete(teamId);
         }
 
         public void ResetBuzzBan()
         {
-            var list = _playerRepo.GetAll();
+            var list = _playerRepository.GetAll();
 
             foreach(var player in list)
             {
@@ -116,7 +116,7 @@ namespace Buzzr.AppLogic
 
         public void ResetBuzzer()
         {
-            var list = _playerRepo.GetAll();
+            var list = _playerRepository.GetAll();
 
             foreach (var player in list)
             {

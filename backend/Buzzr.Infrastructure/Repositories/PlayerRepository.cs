@@ -9,7 +9,7 @@ namespace Buzzr.Infrastructure.Repositories
 
         public PlayerRepository()
         {
-            _dictionary = new();    
+            _dictionary = new Dictionary<Guid, Player>();    
         }
 
         public void Add(Player player)

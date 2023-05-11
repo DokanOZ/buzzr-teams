@@ -1,5 +1,7 @@
-﻿using Buzzr.API.Models;
+﻿using Buzzr.API.models;
+using Buzzr.API.Models;
 using Buzzr.AppLogic.Interfaces;
+using Buzzr.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +18,10 @@ namespace Buzzr.API.Controllers.Admin
             _service = service;
         }
 
-        [HttpPost()]
+        [HttpPost("add")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> AddPlayer([FromBody] CreatePlayerModel model)
+        public IActionResult AddPlayer([FromBody] CreatePlayerModel model)
         {
             try
             {
@@ -37,10 +39,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("remove")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> RemovePlayer([FromBody] Guid playerId)
+        public IActionResult RemovePlayer([FromBody] Guid playerId)
         {
             try
             {
@@ -61,10 +63,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("ban")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> BanPlayer([FromBody] Guid playerId)
+        public IActionResult BanPlayer([FromBody] Guid playerId)
         {
             try
             {
@@ -85,10 +87,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("unbannAll")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UnBanAll()
+        public IActionResult UnBanAll()
         {
             try
             {
@@ -102,27 +104,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("resetBuzzer")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> ResetBuzzBan()
-        {
-            try
-            {
-                _service.ResetBuzzBan();
-
-                return Ok("Players unBanned");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        [HttpPost()]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> ResetBuzzer()
+        public IActionResult ResetBuzzer()
         {
             try
             {
@@ -136,21 +121,33 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpGet()]
+        [HttpGet("getAllBuzzed")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllBuzzedPlayers()
+        public IActionResult GetAllBuzzedPlayers()
         {
             try
             {
                 var players = _service.GetBuzzedList();
+
+                IList<PlayerModel> playerModelList = new List<PlayerModel>();
 
                 if (players == null || players.Count <= 0)
                 {
                     return NotFound("No players found");
                 }
 
-                return Ok(players);
+                foreach (var player in players)
+                {
+                    PlayerModel model = new PlayerModel();
+                    model.Name = player.Name;
+                    model.Id = player.Id;
+                    model.teamId = player.TeamId;
+
+                    playerModelList.Add(model);
+                }
+
+                return Ok(playerModelList);
             }
             catch (Exception ex)
             {
@@ -158,10 +155,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpGet()]
+        [HttpGet("getRandomBuzzed")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetRandomBuzzedPlayer()
+        public IActionResult GetRandomBuzzedPlayer()
         {
             try
             {
@@ -172,7 +169,13 @@ namespace Buzzr.API.Controllers.Admin
                     return NotFound("No player found");
                 }
 
-                return Ok(player);
+                PlayerModel playerModel = new PlayerModel();
+
+                playerModel.Id = player.Id;
+                playerModel.Name = player.Name;
+                playerModel.teamId = player.TeamId;
+
+                return Ok(playerModel);
             }
             catch (Exception ex)
             {
@@ -184,7 +187,7 @@ namespace Buzzr.API.Controllers.Admin
         [HttpGet("{playerId:Guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetOnePlayer([FromRoute] Guid playerId)
+        public IActionResult GetOnePlayer([FromRoute] Guid playerId)
         {
             try
             {
@@ -195,7 +198,13 @@ namespace Buzzr.API.Controllers.Admin
                     return NotFound("No player found");
                 }
 
-                return Ok(player);
+                PlayerModel playerModel = new PlayerModel();
+
+                playerModel.Id = playerId;
+                playerModel.Name = player.Name;
+                playerModel.teamId = player.TeamId;
+
+                return Ok(playerModel);
             }
             catch (Exception ex)
             {
@@ -203,21 +212,33 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpGet()]
+        [HttpGet("getAll")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllPlayers()
+        public IActionResult GetAllPlayers()
         {
             try
             {
                 var players = _service.GetPlayers();
+
+                IList<PlayerModel> playerModelList = new List<PlayerModel>();
 
                 if (players == null || players.Count <= 0)
                 {
                     return NotFound("No players found");
                 }
 
-                return Ok(players);
+                foreach(var player in players)
+                {
+                    PlayerModel model = new PlayerModel();
+                    model.Name = player.Name;
+                    model.Id = player.Id;
+                    model.teamId = player.TeamId;
+
+                    playerModelList.Add(model);
+                }
+
+                return Ok(playerModelList);
             }
             catch (Exception ex)
             {

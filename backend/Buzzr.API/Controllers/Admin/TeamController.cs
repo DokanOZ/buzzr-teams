@@ -1,4 +1,5 @@
-﻿using Buzzr.API.Models;
+﻿using Buzzr.API.models;
+using Buzzr.API.Models;
 using Buzzr.AppLogic;
 using Buzzr.AppLogic.Interfaces;
 using Buzzr.Domain;
@@ -18,10 +19,10 @@ namespace Buzzr.API.Controllers.Admin
             _service = service;
         }
 
-        [HttpPost()]
+        [HttpPost("add")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> AddTeam([FromBody] CreateTeamModel model)
+        public IActionResult AddTeam([FromBody] CreateTeamModel model)
         {
             try
             {
@@ -39,10 +40,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("remove")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> RemoveTeam([FromBody] Guid teamId)
+        public IActionResult RemoveTeam([FromBody] Guid teamId)
         {
             try
             {
@@ -64,10 +65,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("addPoints")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> AddPoints([FromBody] PointsModel model)
+        public IActionResult AddPoints([FromBody] PointsModel model)
         {
             try
             {
@@ -88,10 +89,10 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpPost()]
+        [HttpPost("removePoints")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> RemovePoints([FromBody] PointsModel model)
+        public IActionResult RemovePoints([FromBody] PointsModel model)
         {
             try
             {
@@ -115,18 +116,37 @@ namespace Buzzr.API.Controllers.Admin
         [HttpGet("{teamId:Guid}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetOneTeam([FromRoute] Guid teamId)
+        public IActionResult GetOneTeam([FromRoute] Guid teamId)
         {
             try
             {
                 var team = _service.GetTeam(teamId);
+
+                TeamModel teamModel = new TeamModel();
+                IList<PlayerModel> playerModelList = new List<PlayerModel>();
 
                 if (team == null)
                 {
                     return NotFound("No team found");
                 }
 
-                return Ok(team);
+                teamModel.Name = team.Name;
+                teamModel.Id = teamId;
+                teamModel.Points = team.Points;
+
+                foreach (var player in team.players)
+                {
+                    PlayerModel model = new PlayerModel();
+                    model.Name = player.Name;
+                    model.Id = player.Id;
+                    model.teamId = player.TeamId;
+
+                    playerModelList.Add(model);
+                }
+
+                teamModel.Players = playerModelList;
+
+                return Ok(teamModel);
             }
             catch (Exception ex)
             {
@@ -134,14 +154,15 @@ namespace Buzzr.API.Controllers.Admin
             }
         }
 
-        [HttpGet()]
+        [HttpGet("getAll")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllTeams()
+        public IActionResult GetAllTeams()
         {
             try
             {
-                var teams = _service.GetTeams();
+                IList<Team> teams = _service.GetTeams();
+                
 
                 if (teams == null || teams.Count <= 0)
                 {

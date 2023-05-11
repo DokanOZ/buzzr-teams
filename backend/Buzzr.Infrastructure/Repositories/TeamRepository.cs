@@ -9,7 +9,7 @@ namespace Buzzr.Infrastructure.Repositories
 
         public TeamRepository() 
         {
-            _dictionary = new();
+            _dictionary = new Dictionary<Guid, Team>();
         }
         public void Add(Team team)
         {
@@ -23,8 +23,9 @@ namespace Buzzr.Infrastructure.Repositories
 
         public IList<Team> GetAll()
         {
-            var list = _dictionary.Values.ToList();
-            return list;
+            IList<Team> teams = _dictionary.Values
+                .ToList();
+            return teams;
         }
 
         public Team GetById(Guid id)

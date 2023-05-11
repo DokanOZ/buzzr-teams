@@ -16,10 +16,10 @@ namespace Buzzr.API.Controllers.Player
             _service = service;
         }
 
-        [HttpPost()]
+        [HttpPost("buzz")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> PlayerBuzz([FromBody] BuzzedPlayerModel model)
+        public IActionResult PlayerBuzz([FromBody] BuzzedPlayerModel model)
         {
             try
             {
