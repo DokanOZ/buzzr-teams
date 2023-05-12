@@ -5,9 +5,9 @@ using Buzzr.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<IService, Service>();
-builder.Services.AddScoped<ITeamRepository, TeamRepository>();
-builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddSingleton<IService, Service>();
+builder.Services.AddSingleton<ITeamRepository, TeamRepository>();
+builder.Services.AddSingleton<IPlayerRepository, PlayerRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

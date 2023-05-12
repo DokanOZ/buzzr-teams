@@ -15,6 +15,7 @@
             Name = name;
             TeamId = teamId;
             BuzzedTime = new TimeOnly(0, 0, 0, 0);
+            BuzzActive = true;
         }
 
         public void ResetBuzzer()
@@ -27,9 +28,9 @@
             BuzzedTime = new TimeOnly(hour, minute, second, millisecond);
         }
 
-        public void BuzzBan(bool notBanned)
+        public void BuzzBan(bool active)
         {
-            BuzzActive = notBanned;
+            BuzzActive = active;
         }
     }
 }

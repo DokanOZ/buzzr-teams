@@ -29,8 +29,13 @@ namespace Buzzr.API.Controllers.Player
                 {
                     return BadRequest("Could not find player");
                 }
+                if (!player.BuzzActive)
+                {
+                    return Ok("player banned");
+                }
+                TimeOnly time = new TimeOnly(model.BuzzTime.Hour, model.BuzzTime.Minute, model.BuzzTime.Second, model.BuzzTime.Milisecond);
 
-                _service.Buzz(model.PlayerId, model.BuzzTime);
+                _service.Buzz(model.PlayerId, time);
 
                 return Ok("Player buzz received");
             }

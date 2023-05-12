@@ -39,6 +39,7 @@ namespace Buzzr.AppLogic
         {
             Player newPlayer = new Player(name, teamId);
             _teamRepository.GetById(teamId).AddPlayer(newPlayer);
+            _playerRepository.Add(newPlayer);
             return newPlayer;
 
         }
